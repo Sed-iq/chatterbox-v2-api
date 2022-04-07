@@ -13,7 +13,7 @@ const io = require("socket.io")(server, {
     origin: "*",
   },
 });
-
+let users = [];
 app.use(router);
 mongoose.connect(URL, (err) => {
   if (err) throw err;
@@ -64,11 +64,22 @@ mongoose.connect(URL, (err) => {
 // });
 // });
 io.on("connection", (socket) => {
-  socket.on("join", (link) => {
+  socket.on("join", (link, cb) => {
+    // Checking users
+    if (users.length > 2) cb(false);
+    else if (!users.includes(socket.handshake.auth.$token)) {
+      users.push(socket.handshake.auth.$token);
+      console.log(users);
+      cb(true);
+    } else {
+      cb(true);
+      console.log(users);
+    }
     socket.join(link);
     socket.on("message", (m, cb) => {
-      socket.broadcast.to(link).emit("message", m.message);
+      socket.broadcast.to(link).emit("message", m);
       cb(m.message);
     });
   });
+  socket.on("disconnect", () => {});
 });

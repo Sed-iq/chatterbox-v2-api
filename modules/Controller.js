@@ -78,7 +78,39 @@ const Controller = {
       })
       .catch((e) => sendERR(res, "Error deleting"));
   },
+  saveChat: (req, res) => {
+    let { message, senders_token, date, link } = req.body;
 
+    let $token = req.headers["x-senders-token"];
+    if ($token) {
+      jwt.verify($token, "secret", (err, decoded) => {
+        if (err) res.status(404).end();
+        else {
+          // Save chats
+          Schema.Link.updateOne(
+            { code: link },
+            {
+              $push: {
+                chats: {
+                  message,
+                  senders_token,
+                  date,
+                },
+              },
+            }
+          )
+            .then((d) => {
+              if (d.modifiedCount == 1) res.status(200).end();
+              else res.status(404).end();
+            })
+            .catch((err) => {
+              console.log(err);
+              res.status(404).end();
+            });
+        }
+      });
+    } else res.status(404).end();
+  },
   getChats: (req, res) => {
     const { userId } = req;
     Schema.User.findOne({ userId }, (err, da) => {
@@ -89,6 +121,7 @@ const Controller = {
       }
     });
   },
+  // Verifies token and delivers chat
   chatInit: (req, res) => {
     var $ = req.headers["x-token"];
     let { code } = req.params; // Anonymous code
@@ -101,6 +134,7 @@ const Controller = {
       if (d == "" || d === null || err) {
         res.status(404).end();
       } else {
+        const { chats } = d;
         const userId = d.creator;
         //  If no error occurres and link is valid
         if ($token.accessToken == "undefined" || $token.accessToken == null) {
@@ -110,9 +144,14 @@ const Controller = {
             let newToken = jwt.sign({ new_tokens }, "secret", {
               expiresIn: "1000hrs",
             });
-            res.json({ auth: false, token: newToken });
+            res.json({
+              chats,
+              auth: false,
+              token: newToken,
+            });
           } else {
             res.json({
+              chats,
               auth: false,
               token: $token.senderToken,
             });
@@ -125,10 +164,17 @@ const Controller = {
           let newToken = jwt.sign({ ntoken }, "secret", {
             expiresIn: "1000hrs",
           });
-          res.json({ auth: false, token: newToken });
+          res.json({
+            chats,
+            auth: false,
+            token: newToken,
+          });
         } else {
           // Means sender token exist and user logged in
-          res.json({ auth: true });
+          res.json({
+            chats,
+            auth: true,
+          });
         }
       }
     });
@@ -170,25 +216,3 @@ async function verifyJwt(token) {
   }
 }
 module.exports = Controller;
-// if (action.auth == true) console.log("Verified token present");
-// else console.log(action.auth);
-// use(async (socket, next) => {
-//   const token = socket.handshake.auth.token;
-//   next();
-//   // Verifying token
-//   // jwt.verify(token, "secret", async (err, decoded) => {
-//   //   if (err) next(new Error("Thou shall not pass"));
-//   //   else {
-//   //     await Schema.Link.findOne({ code: decoded.tokens.link }, (err, d) => {
-//   //       if (err) {
-//   //         next(new Error("Not Found"));
-//   //       } else if (d == null) {
-//   //         next(new Error("Error"));
-//   //       } else {
-//   //         linkData = d.code;
-//   //         next();
-//   //       }
-//   //     });
-//   //   }
-//   // });
-// })

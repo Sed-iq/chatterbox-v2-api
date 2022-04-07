@@ -28,6 +28,7 @@ app.put("/generate", Auth.viewAuth, Controller.generateLink);
 app.put("/code", Auth.viewAuth, Controller.deleteLink);
 app.post("/login", Auth.jwtVerify, Auth.login);
 app.post("/register", Auth.jwtVerify, Auth.register);
+app.post("/saveChat", Controller.saveChat);
 app.delete("/delete", Auth.viewAuth, Controller.deleteAcc);
 // Returns chats in a json format
 // app.post("/chats/:id")

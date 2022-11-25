@@ -36,7 +36,7 @@ const Schema = {
           type: String,
           required: true,
         },
-        userId: {
+        creator: {
           type: String,
           required: true,
         },

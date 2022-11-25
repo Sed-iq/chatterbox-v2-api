@@ -25,7 +25,7 @@ const Controller = {
           if (d !== "") {
             let code = new Schema.Link({
               code: newCode,
-              userId: req.userId,
+              creator: req.userId,
               chats: [],
             });
             code.save().then(() => res.json({ auth: true, newCode }));
@@ -95,23 +95,42 @@ const Controller = {
     var $token = JSON.parse($); // Both access tokens and senders token
     const new_tokens = {
       // To be given to new user upon identification of not access
-      link: code,
       sender_id: randomGen(5),
     };
     Schema.Link.findOne({ code }, (err, d) => {
       if (d == "" || d === null || err) {
         res.status(404).end();
+      } else {
+        const userId = d.creator;
+        //  If no error occurres and link is valid
+        if ($token.accessToken == "undefined" || $token.accessToken == null) {
+          // if there is no access token i.e not login
+          if ($token.senderToken == null || $token.senderToken == "") {
+            // Generate new token for em
+            let newToken = jwt.sign({ new_tokens }, "secret", {
+              expiresIn: "1000hrs",
+            });
+            res.json({ auth: false, token: newToken });
+          } else {
+            res.json({
+              auth: false,
+              token: $token.senderToken,
+            });
+          }
+        } else if ($token.senderToken == null || $token.senderToken == "") {
+          // Sender id not existing but logged in
+          let ntoken = {
+            sender_id: userId,
+          };
+          let newToken = jwt.sign({ ntoken }, "secret", {
+            expiresIn: "1000hrs",
+          });
+          res.json({ auth: false, token: newToken });
+        } else {
+          // Means sender token exist and user logged in
+          res.json({ auth: true });
+        }
       }
-      //  else {
-      //     if ($token == "undefined" || $token == null) {
-      //       let token = jwt.sign({ tokens }, "secret", {
-      //         expiresIn: "100hrs",
-      //       });
-      //       res.json({ token, auth: false }); // Because user was not initially autorized
-      //     } else {
-      //       res.json({ auth: true, token: $token });
-      //     }
-      //   }
     });
   },
 };

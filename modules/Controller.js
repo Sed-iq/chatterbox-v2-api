@@ -80,7 +80,6 @@ const Controller = {
   },
   saveChat: (req, res) => {
     let { message, senders_token, date, link } = req.body;
-
     let $token = req.headers["x-senders-token"];
     if ($token) {
       jwt.verify($token, "secret", (err, decoded) => {
@@ -104,7 +103,6 @@ const Controller = {
               else res.status(404).end();
             })
             .catch((err) => {
-              console.log(err);
               res.status(404).end();
             });
         }

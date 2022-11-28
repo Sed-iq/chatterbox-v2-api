@@ -15,7 +15,7 @@ app.use(router);
 mongoose.connect(URL, (err) => {
   if (err) throw err;
   else {
-    server.listen(5000);
+    server.listen(5000, console.log("Server is  running"));
   }
 });
 
@@ -33,12 +33,14 @@ io.on("connection", (socket) => {
       }
       socket.join(link);
       socket.on("message", (m, cb) => {
+        console.log('message')
         socket.broadcast.to(link).emit("broadcast", m);
         cb(m);
       });
     } else cb(false);
   });
   socket.on("disconnect", (data) => {
+    console.log('Dic')
     let payload = socket.handshake.auth.$token;
     if (users.includes(payload) === true) {
       let r = users.filter((c) => c != payload);
@@ -46,3 +48,4 @@ io.on("connection", (socket) => {
     }
   });
 });
+

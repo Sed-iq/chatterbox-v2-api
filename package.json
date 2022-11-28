@@ -65,6 +65,7 @@
     "sockjs": "^0.3.24",
     "statuses": "^2.0.1",
     "toidentifier": "^1.0.1",
+    "twilio": "^3.83.3",
     "type-is": "^1.6.18",
     "unpipe": "^1.0.0",
     "utils-merge": "^1.0.1",

@@ -76,6 +76,7 @@ const Auth = {
     } else {
       jwt.verify(token, "secret", (err, decoded) => {
         if (err) {
+          console.log(err)
           res.json({ auth: false, message: "Error validating" });
         } else {
           req.userId = decoded.id;

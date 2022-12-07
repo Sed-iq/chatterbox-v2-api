@@ -12,39 +12,45 @@ const Controller = {
             username: data.username,
             email: data.email,
             links: data.codes,
-          },
+            joinDate: data.createdAt,
+          },  
         });
     });
   },
   generateLink: (req, res) => {
     let id = req.userId;
-    let newCode = randomGen(6);
-    Schema.User.findOneAndUpdate({ userId: id }, { $push: { codes: newCode } })
-      .then((d) => {
-        try {
-          if (d !== "") {
-            let code = new Schema.Link({
-              code: newCode,
-              creator: req.userId,
-              chats: [],
-            });
-            code.save().then(() => res.json({ auth: true, newCode }));
-          } else sendERR(res, "Error generating link");
-        } catch (error) {
-          console.log(error);
-          sendERR(res, "Error indexing database");
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        sendERR(res, "Error generating link");
-      });
+    let newCode = randomGen(9);
+    Schema.User.findOne({ userId: id }, (err, x) => {
+      x.codes.unshift(newCode);
+      Schema.User.findOneAndUpdate({ userId: id }, { codes: x.codes })
+        .then((d) => {
+          try {
+            if (d !== "") {
+              let code = new Schema.Link({
+                code: newCode,
+                creator: req.userId,
+                chats: [],
+              });
+              code.save().then((data) => {
+                res.json({ auth: true, link: x.codes });
+              });
+            } else sendERR(res, "Error generating link");
+          } catch (error) {
+            console.log(error);
+            sendERR(res, "Error indexing database");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          sendERR(res, "Error generating link");
+        });
+    });
   },
   deleteLink: (req, res) => {
     let { code } = req.body;
     Schema.Link.deleteOne({ code })
       .then((d) => {
-        if (d.deletedCount == 1) {
+        if (d.acknowledged == true) {
           // Clear link from user code array
           Schema.User.findOne({ userId: req.userId }).then((data) => {
             if (data !== "") {
@@ -53,14 +59,15 @@ const Controller = {
                 { userId: req.userId },
                 { codes: newlink }
               ).then((c) => {
-                if (c.acknowledged == true) res.json({ auth: true });
-                else sendERR(res, "Error deleting link");
+                if (c.acknowledged == true)
+                  res.json({ auth: true, links: newlink });
+                else sendERR(res, "Error deleting link 1");
               });
-            } else sendERR(res, "Error deleting link");
+            } else sendERR(res, "Error deleting link 2");
           });
-        } else sendERR(res, "Error deleting link");
+        } else sendERR(res, "Error deleting link 3");
       })
-      .catch((err) => sendERR(res, "Error deleting link"));
+      .catch((err) => sendERR(res, "Error deleting link 4"));
   },
   deleteAcc: (req, res) => {
     const userId = req.userId;
@@ -162,17 +169,31 @@ const Controller = {
           let newToken = jwt.sign({ ntoken }, "secret", {
             expiresIn: "1000hrs",
           });
+
           res.json({
             chats,
             auth: false,
             token: newToken,
+            accessToken:$token.accessToken
+
+
           });
         } else {
           // Means sender token exist and user logged in
-          res.json({
+          jwt.verify($token.accessToken, 'secret', (err, decoded) =>{
+            if(err) res.json({
+            chats,
+            auth: false,
+            accessToken:$token.accessToken,
+            token: newToken
+          });
+            else res.json({
             chats,
             auth: true,
+            accessToken:$token.accessToken
           });
+          })
+          
         }
       }
     });
@@ -194,23 +215,5 @@ function randomGen(range) {
   });
   return strNum;
 }
-async function verifyJwt(token) {
-  if (token) {
-    await jwt.verify(token, "secret", (err, unhash) => {
-      if (err) {
-        return {
-          auth: false,
-        };
-      } else {
-        return "hello";
-        //   auth: true,
-        //   data: unhash,
-      }
-    });
-  } else {
-    return {
-      auth: false,
-    };
-  }
-}
+
 module.exports = Controller;

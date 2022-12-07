@@ -39,9 +39,15 @@ const Schema = {
           type: String,
           required: true,
         },
+        color:{
+          type: String
+        },
         chats: {
           type: Array,
         },
+        onlineUsers:{
+          type:Array // Quick access data type
+        }
       },
       { timestamps: true }
     )

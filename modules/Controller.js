@@ -89,7 +89,7 @@ const Controller = {
     let { message, senders_token, date, link } = req.body;
     let $token = req.headers["x-senders-token"];
     if ($token) {
-      jwt.verify($token, "secret", (err, decoded) => {
+      jwt.verify($token, process.env.JWT_SECRET, (err, decoded) => {
         if (err) res.status(404).end();
         else {
           // Save chats
@@ -146,7 +146,7 @@ const Controller = {
           // if there is no access token i.e not login
           if ($token.senderToken == null || $token.senderToken == "") {
             // Generate new token for em
-            let newToken = jwt.sign({ new_tokens }, "secret", {
+            let newToken = jwt.sign({ new_tokens }, process.env.JWT_SECRET, {
               expiresIn: "1000hrs",
             });
             res.json({
@@ -166,7 +166,7 @@ const Controller = {
           let ntoken = {
             sender_id: userId,
           };
-          let newToken = jwt.sign({ ntoken }, "secret", {
+          let newToken = jwt.sign({ ntoken }, process.env.JWT_SECRET, {
             expiresIn: "1000hrs",
           });
 

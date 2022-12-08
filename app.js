@@ -2,6 +2,7 @@ const http = require("http");
 const express = require("express");
 const app = express();
 const server = http.createServer(app);
+const dotenv = require('dotenv').config();
 const router = require("./modules/router");
 const mongoose = require("mongoose");
 const URL = "mongodb://127.0.0.1/chatterbox";
@@ -11,12 +12,11 @@ const io = require("socket.io")(server, {
     origin: "*",
   },
 });
-let users = [];
 app.use(router);
 mongoose.connect(URL, (err) => {
   if (err) throw err;
   else {
-    server.listen(5000, console.log("Server is  running"));
+    server.listen(process.env.PORT, console.log("Server is running"));
   }
 });
 

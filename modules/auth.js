@@ -35,7 +35,7 @@ const Auth = {
             .then((result) => {
               if (result === true) {
                 let id = data.userId;
-                let token = jwt.sign({ id }, "secret", {
+                let token = jwt.sign({ id }, process.env.JWT_SECRET, {
                   expiresIn: "15hrs",
                 });
                 res.json({ auth: true, token });
@@ -55,7 +55,7 @@ const Auth = {
       next();
     } else {
       // Verifies token
-      jwt.verify(token, "secret", (err, decoded) => {
+      jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
         if (err) {
           next();
         } else {
@@ -74,7 +74,7 @@ const Auth = {
         auth: false,
       });
     } else {
-      jwt.verify(token, "secret", (err, decoded) => {
+      jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
         if (err) {
           console.log(err)
           res.json({ auth: false, message: "Error validating" });

@@ -180,13 +180,13 @@ const Controller = {
           });
         } else {
           // Means sender token exist and user logged in
-          jwt.verify($token.accessToken, 'secret', (err, decoded) =>{
-            if(err) res.json({
+          jwt.verify($token.accessToken, process.env.JWT_SECRET,(err,decoded) =>{
+            if(err){ console.log(err)
+             res.json({
             chats,
             auth: false,
             accessToken:$token.accessToken,
-            token: newToken
-          });
+          })}
             else res.json({
             chats,
             auth: true,

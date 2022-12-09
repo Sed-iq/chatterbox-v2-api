@@ -4,7 +4,10 @@ const bcrypt = require("bcryptjs");
 const Auth = {
   register: async (req, res) => {
     let { username, email, password } = req.body;
-    bcrypt
+    Schema.User.find({ username }, (err, d)=>{
+      if(err)
+        sendERR(res, "Database Error") 
+      else if(d =='')  bcrypt
       .hash(password, 10)
       .then((result) => {
         let user = new Schema.User({
@@ -21,6 +24,9 @@ const Auth = {
       .catch((err) => {
         sendERR(res, "Error securing register");
       });
+        else sendERR(res, "Username already taken, try another one")
+    })
+   
   },
   login: async (req, res) => {
     let { username, password } = req.body;

@@ -7,12 +7,12 @@ const dotenv = require("dotenv").config();
 const mongoose = require("mongoose");
 const URL = process.env.DB_URL;
 const Schema = require("./modules/Schema");
-// const io = require("socket.io")(server, {
-//   cors: {
-//     origin: "*",
-//   },
-// });
-app.use(router);
+const io = require("socket.io")(server, {
+  cors: {
+    origin: "*",
+  },
+});
+// app.use(router);
 mongoose.connect(URL, (err) => {
   if (err) throw err;
   else {

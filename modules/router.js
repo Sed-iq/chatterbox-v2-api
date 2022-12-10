@@ -9,7 +9,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser());
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "https://chatterbox-v2.vercel.app",
     credentials: true,
   })
 );

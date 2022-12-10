@@ -21,7 +21,19 @@ app.use(
   })
 );
 app.get("/", ({}, res) => {
-  res.send("Home page");
+  res.send(`Chatterbox v2 api, 
+  Routes: 
+  /validate
+  /showChats
+  /anon/:code
+  /dashboard 
+  /generate
+  /login
+  /register/
+  /code
+  /delete
+  /savechat
+  `);
 });
 app.post("/validate", Auth.viewAuth);
 app.post("/showChats", Auth.viewAuth, Controller.getChats);

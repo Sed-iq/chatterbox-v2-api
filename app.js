@@ -2,11 +2,11 @@ const http = require("http");
 const express = require("express");
 const app = express();
 const server = http.createServer(app);
-const dotenv = require('dotenv').config();
+const dotenv = require("dotenv").config();
 // const router = require("./modules/router");
 const mongoose = require("mongoose");
-const URL = process.env.DB_URL
-const Schema = require('./modules/Schema')
+const URL = process.env.DB_URL;
+const Schema = require("./modules/Schema");
 // const io = require("socket.io")(server, {
 //   cors: {
 //     origin: "*",
@@ -19,9 +19,9 @@ mongoose.connect(URL, (err) => {
     server.listen(process.env.PORT, console.log("Server is running"));
   }
 });
-app.get('/', ({}, res) =>{
-  res.send('Home page')
-})
+app.get("/", ({}, res) => {
+  res.send("Home page");
+});
 
 // io.on("connection", (socket) => {
 //   let payload = socket.handshake.auth.$token;
@@ -36,13 +36,13 @@ app.get('/', ({}, res) =>{
 //             cb(true, true)
 //           }
 //           else {
-//             // Adding user 
+//             // Adding user
 //             d.onlineUsers.unshift(payload)
 //             Schema.Link.findOneAndUpdate({ code:link }, { onlineUsers:d.onlineUsers } ,(err,x)=>{
 //               if(err|| x =='') cb(false, false)
 //                 else {
 //                   if(x.onlineUsers.length == 1) cb(true, true)
-//                     else cb(true, false)   
+//                     else cb(true, false)
 //                 }
 //             })
 //           }
@@ -56,7 +56,7 @@ app.get('/', ({}, res) =>{
 //        m.date = new Date()
 //        socket.broadcast.to(link).emit("broadcast", m);
 //        cb(m);
-//       });  
+//       });
 //   });
 //   socket.on("disconnect", (data) => {
 //  const $link = socket.handshake.auth.$link
@@ -72,10 +72,9 @@ app.get('/', ({}, res) =>{
 //           }
 //           })
 //         }
-//   })  
+//   })
 // .catch(e =>{
 //   console.log("Ending", e)
 // })
 //   });
 // });
-

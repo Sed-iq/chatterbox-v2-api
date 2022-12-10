@@ -1,9 +1,10 @@
 const http = require("http");
 const express = require("express");
 const app = express();
+const path = require("path");
 const server = http.createServer(app);
 const dotenv = require("dotenv").config();
-// const router = require("./modules/router");
+const router = require(path.join(__dirname + "/modules/router.js"));
 const mongoose = require("mongoose");
 const URL = process.env.DB_URL;
 // const Schema = require("./modules/Schema");
@@ -12,15 +13,12 @@ const io = require("socket.io")(server, {
     origin: "*",
   },
 });
-// app.use(router);
+app.use(router);
 mongoose.connect(URL, (err) => {
   if (err) throw err;
   else {
     server.listen(process.env.PORT, console.log("Server is running"));
   }
-});
-app.get("/", ({}, res) => {
-  res.send("Home page");
 });
 
 // io.on("connection", (socket) => {

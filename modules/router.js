@@ -20,6 +20,9 @@ app.use(
     resave: true,
   })
 );
+app.get("/", ({}, res) => {
+  res.send("Home page");
+});
 app.post("/validate", Auth.viewAuth);
 app.post("/showChats", Auth.viewAuth, Controller.getChats);
 app.post("/anon/:code", Controller.chatInit); // Gets all chats of a single link

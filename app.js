@@ -3,10 +3,10 @@ const express = require("express");
 const app = express();
 const server = http.createServer(app);
 const dotenv = require("dotenv").config();
-const router = require("./modules/router");
+// const router = require("./modules/router");
 const mongoose = require("mongoose");
 const URL = process.env.DB_URL;
-const Schema = require("./modules/Schema");
+// const Schema = require("./modules/Schema");
 // const io = require("socket.io")(server, {
 //   cors: {
 //     origin: "*",

@@ -74,6 +74,9 @@
     "start": "node app.js",
     "dev": " nodemon app.js "
   },
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC"

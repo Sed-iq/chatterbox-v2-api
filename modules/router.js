@@ -35,6 +35,16 @@ app.get("/", ({}, res) => {
   /savechat
   `);
 });
+app.get("/so", (req, res) => {
+  res.send(`
+  <script src="http://localhost:5000/socket.io/socket.io.js"></script>
+  <script>
+  const socket = io("http://localhost:3001/")
+  socket.emit('write', 'Hello i was generated from the terminal')
+  </script>
+  <h2>Socket.io checker</h2>
+  `);
+});
 app.post("/validate", Auth.viewAuth);
 app.post("/showChats", Auth.viewAuth, Controller.getChats);
 app.post("/anon/:code", Controller.chatInit); // Gets all chats of a single link
